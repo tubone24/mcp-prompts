@@ -1,0 +1,14 @@
+description: "都市の天気を尋ねる"
+version: "1.0"
+arguments:
+  - name: "city"
+    description: "都市"
+    required: true
+  - name: "date"
+    description: "日付"
+    required: true
+metadata:
+  tags:
+    - weather
+  suggested_use: "都市の天気を尋ねる"
+  output_format: "markdown"

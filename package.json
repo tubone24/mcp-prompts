@@ -1,0 +1,24 @@
+{
+  "name": "mcp-prompt",
+  "version": "1.0.0",
+  "description": "MCP server for prompt templates with TypeScript",
+  "main": "dist/server.js",
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/server.js",
+    "dev": "tsx src/server.ts"
+  },
+  "keywords": ["mcp", "model-context-protocol", "prompt-templates"],
+  "author": "tubone24<tubo.yyyuuu@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.12.1",
+    "@types/js-yaml": "^4.0.9",
+    "@types/node": "^22.15.29",
+    "js-yaml": "^4.1.0",
+    "tsx": "^4.19.4",
+    "typescript": "^5.8.3",
+    "yaml": "^2.8.0"
+  }
+}
