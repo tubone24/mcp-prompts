@@ -193,15 +193,6 @@ Retrieves a specific prompt template and replaces arguments with provided values
 - `name`: The template name (directory name)
 - `arguments`: Object containing argument values to substitute
 
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/new-template`)
-3. Add your template or improvements
-4. Commit your changes (`git commit -am 'Add new template'`)
-5. Push to the branch (`git push origin feature/new-template`)
-6. Create a Pull Request
-
 ## License
 
 MIT License - see LICENSE file for details
