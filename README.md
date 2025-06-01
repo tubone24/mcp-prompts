@@ -10,6 +10,42 @@ A Model Context Protocol (MCP) server that provides a "prompts" primitive for ma
 - **Type-Safe Implementation**: Built with TypeScript for improved reliability and developer experience
 - **Standard MCP Prompts**: Implements the MCP prompts primitive, making it compatible with any MCP client
 
+## Demo
+
+This MCP server provides "prompts" that can be used directly in Claude Desktop. Here's how it works:
+
+### 1. Viewing Available Prompts
+When the MCP server is configured, you can see the list of available prompts by clicking "+" icon in Claude:
+
+![Available prompts list](./docs/demo0.png)
+
+The server dynamically loads all templates from the `templates` directory and makes them available as prompts.
+
+### 2. Using a Prompt
+Select a prompt (e.g., `today_city_weather_forecast`) to see its required arguments:
+
+![Prompt argument form](./docs/demo1.png)
+
+Fill in the required fields:
+- **City**: Enter the city name (e.g., "川崎" for Kawasaki)
+- **Date**: Enter the date for the forecast (e.g., "2025-06-02")
+
+### 3. Prompt Execution
+After clicking "プロンプトを追加" (Add Prompt), the template is processed with your arguments:
+
+![Prompt execution result](./docs/demo2.png)
+
+The server replaces the placeholders in the template with your provided values and returns the formatted prompt.
+
+### 4. Claude's Response
+Claude then processes the generated prompt and provides a response based on the template's instructions:
+
+![Claude's response](./docs/demo3.png)
+
+In this example, Claude analyzes weather data and provides a detailed weather forecast for the specified city and date, following the format defined in the template.
+
+
+
 ## Installation
 
 ```bash
@@ -19,14 +55,14 @@ npm install
 ## Quick Start
 
 1. Build the project:
-```bash
-npm run build
-```
+   ```bash
+   npm run build
+   ```
 
 2. Start the server:
-```bash
-npm start
-```
+   ```bash
+   npm start
+   ```
 
 For development with hot-reloading:
 ```bash
