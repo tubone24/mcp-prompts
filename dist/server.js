@@ -1,6 +1,6 @@
 import { Server } from "@modelcontextprotocol/sdk/server/index.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
-import { ListPromptsRequestSchema, GetPromptRequestSchema, ErrorCode, McpError } from "@modelcontextprotocol/sdk/types.js";
+import { ListPromptsRequestSchema, GetPromptRequestSchema, ListResourcesRequestSchema, ReadResourceRequestSchema, ErrorCode, McpError } from "@modelcontextprotocol/sdk/types.js";
 import * as yaml from 'js-yaml';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -11,16 +11,19 @@ const __dirname = dirname(__filename);
 class TemplateServer {
     server;
     templates;
+    resources;
     constructor() {
         this.server = new Server({
-            name: "analysis-template-server",
+            name: "prompts-template-server",
             version: "0.1.0",
         }, {
             capabilities: {
                 prompts: {},
+                resources: {},
             },
         });
         this.templates = this.loadTemplates();
+        this.resources = this.loadResources();
         this.setupHandlers();
     }
     loadTemplates() {
@@ -54,6 +57,41 @@ class TemplateServer {
             console.error('Failed to load templates directory:', error);
         }
         return templates;
+    }
+    loadResources() {
+        const resources = new Map();
+        const resourceDir = path.join(__dirname, '..', 'resources');
+        try {
+            if (!fs.existsSync(resourceDir)) {
+                fs.mkdirSync(resourceDir, { recursive: true });
+            }
+            const files = fs.readdirSync(resourceDir);
+            for (const file of files) {
+                if (file.endsWith('.md')) {
+                    const filePath = path.join(resourceDir, file);
+                    const content = fs.readFileSync(filePath, 'utf-8');
+                    const resourceName = path.basename(file, '.md');
+                    const uri = `resource://${resourceName}`;
+                    // Extract description from first line if it starts with #
+                    let description = '';
+                    const lines = content.split('\n');
+                    if (lines[0].startsWith('#')) {
+                        description = lines[0].replace('#', '').trim();
+                    }
+                    resources.set(uri, {
+                        uri,
+                        name: resourceName,
+                        description: description || `Resource: ${resourceName}`,
+                        mimeType: 'text/markdown',
+                        content
+                    });
+                }
+            }
+        }
+        catch (error) {
+            console.error('Failed to load resources directory:', error);
+        }
+        return resources;
     }
     setupHandlers() {
         // Handle list prompts
@@ -93,6 +131,33 @@ class TemplateServer {
                             type: "text",
                             text: formattedTemplate
                         }
+                    }
+                ]
+            };
+        });
+        // Handle list resources
+        this.server.setRequestHandler(ListResourcesRequestSchema, async () => {
+            const resources = Array.from(this.resources.values()).map(resource => ({
+                uri: resource.uri,
+                name: resource.name,
+                description: resource.description,
+                mimeType: resource.mimeType
+            }));
+            return { resources };
+        });
+        // Handle read resource
+        this.server.setRequestHandler(ReadResourceRequestSchema, async (request) => {
+            const { uri } = request.params;
+            const resource = this.resources.get(uri);
+            if (!resource) {
+                throw new McpError(ErrorCode.InvalidRequest, `Resource not found: ${uri}`);
+            }
+            return {
+                contents: [
+                    {
+                        uri: resource.uri,
+                        mimeType: resource.mimeType,
+                        text: resource.content
                     }
                 ]
             };

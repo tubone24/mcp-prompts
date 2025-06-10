@@ -4,6 +4,8 @@ import {
   CallToolRequestSchema, 
   ListPromptsRequestSchema,
   GetPromptRequestSchema,
+  ListResourcesRequestSchema,
+  ReadResourceRequestSchema,
   ErrorCode,
   McpError
 } from "@modelcontextprotocol/sdk/types.js";
@@ -36,9 +38,18 @@ interface Template {
   template: string;
 }
 
+interface Resource {
+  uri: string;
+  name: string;
+  description?: string;
+  mimeType: string;
+  content: string;
+}
+
 class TemplateServer {
   private server: Server;
   private templates: Map<string, Template>;
+  private resources: Map<string, Resource>;
 
   constructor() {
     this.server = new Server(
@@ -49,11 +60,13 @@ class TemplateServer {
       {
         capabilities: {
           prompts: {},
+          resources: {},
         },
       }
     );
     
     this.templates = this.loadTemplates();
+    this.resources = this.loadResources();
     this.setupHandlers();
   }
 
@@ -92,6 +105,47 @@ class TemplateServer {
     }
     
     return templates;
+  }
+
+  private loadResources(): Map<string, Resource> {
+    const resources = new Map<string, Resource>();
+    const resourceDir = path.join(__dirname, '..', 'resources');
+    
+    try {
+      if (!fs.existsSync(resourceDir)) {
+        fs.mkdirSync(resourceDir, { recursive: true });
+      }
+      
+      const files = fs.readdirSync(resourceDir);
+      
+      for (const file of files) {
+        if (file.endsWith('.md')) {
+          const filePath = path.join(resourceDir, file);
+          const content = fs.readFileSync(filePath, 'utf-8');
+          const resourceName = path.basename(file, '.md');
+          const uri = `resource://${resourceName}`;
+          
+          // Extract description from first line if it starts with #
+          let description = '';
+          const lines = content.split('\n');
+          if (lines[0].startsWith('#')) {
+            description = lines[0].replace('#', '').trim();
+          }
+          
+          resources.set(uri, {
+            uri,
+            name: resourceName,
+            description: description || `Resource: ${resourceName}`,
+            mimeType: 'text/markdown',
+            content
+          });
+        }
+      }
+    } catch (error) {
+      console.error('Failed to load resources directory:', error);
+    }
+    
+    return resources;
   }
 
   private setupHandlers() {
@@ -144,6 +198,41 @@ class TemplateServer {
               type: "text",
               text: formattedTemplate
             }
+          }
+        ]
+      };
+    });
+
+    // Handle list resources
+    this.server.setRequestHandler(ListResourcesRequestSchema, async () => {
+      const resources = Array.from(this.resources.values()).map(resource => ({
+        uri: resource.uri,
+        name: resource.name,
+        description: resource.description,
+        mimeType: resource.mimeType
+      }));
+      
+      return { resources };
+    });
+
+    // Handle read resource
+    this.server.setRequestHandler(ReadResourceRequestSchema, async (request) => {
+      const { uri } = request.params;
+      
+      const resource = this.resources.get(uri);
+      if (!resource) {
+        throw new McpError(
+          ErrorCode.InvalidRequest,
+          `Resource not found: ${uri}`
+        );
+      }
+      
+      return {
+        contents: [
+          {
+            uri: resource.uri,
+            mimeType: resource.mimeType,
+            text: resource.content
           }
         ]
       };
