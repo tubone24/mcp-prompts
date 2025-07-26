@@ -7,8 +7,10 @@ A Model Context Protocol (MCP) server that provides a "prompts" primitive for ma
 - **Dynamic Template Loading**: Automatically loads prompt templates from the `templates` directory
 - **YAML Configuration**: Each template uses YAML for configuration, making it easy to define metadata and parameters
 - **Argument Support**: Templates support dynamic arguments that can be replaced at runtime
+- **Resource Management**: Provides access to Markdown resources from the `resources` directory through MCP resources primitive
 - **Type-Safe Implementation**: Built with TypeScript for improved reliability and developer experience
 - **Standard MCP Prompts**: Implements the MCP prompts primitive, making it compatible with any MCP client
+- **Standard MCP Resources**: Implements the MCP resources primitive for accessing static content and documentation
 
 ## Demo
 
@@ -68,6 +70,36 @@ For development with hot-reloading:
 ```bash
 npm run dev
 ```
+
+## DXT Package Distribution
+
+This server can also be distributed as a DXT (Desktop Extension) package for one-click installation in Claude Desktop.
+
+### Building DXT Package
+
+1. **Validate DXT configuration:**
+   ```bash
+   npm run dxt:validate
+   ```
+
+2. **Build the DXT package:**
+   ```bash
+   npm run dxt:build
+   ```
+
+3. **Create the .dxt file:**
+   ```bash
+   npm run dxt:package
+   ```
+
+The final `.dxt` file will be created in the `dist-dxt` directory and can be distributed for easy installation.
+
+### Installing DXT Package
+
+1. Open Claude Desktop
+2. Go to Settings > Extensions  
+3. Click "Install Extension" and select the `.dxt` file
+4. The MCP server will be automatically configured and ready to use
 
 ## Creating Templates
 
@@ -166,6 +198,7 @@ mcp-prompt-templates-ts/
 │   ├── server.ts    # Main MCP server implementation
 │   └── client.ts    # Test client for development
 ├── templates/       # Prompt templates directory
+├── resources/       # Static Markdown resources directory
 ├── dist/           # Compiled JavaScript output
 ├── package.json
 ├── tsconfig.json
@@ -179,19 +212,77 @@ mcp-prompt-templates-ts/
 3. Add a `template.md` file with the prompt template
 4. Restart the server to load the new template
 
+## Managing Resources
+
+Resources provide a way to serve static Markdown content through the MCP resources primitive. These can be documentation, guides, or any reference material that MCP clients can access.
+
+### Resource Structure
+
+Resources are stored as Markdown files in the `resources` directory:
+
+```
+resources/
+├── user-guide.md
+├── api-documentation.md
+└── troubleshooting-guide.md
+```
+
+### Resource Format
+
+Each resource is a standard Markdown file. The first line can optionally start with `#` to provide a description:
+
+```markdown
+# User Guide for Template Management
+
+This guide explains how to create and manage prompt templates...
+
+## Section 1
+Content here...
+```
+
+### Adding Resources
+
+1. Create a `.md` file in the `resources/` directory
+2. Add your Markdown content
+3. Optionally start with a `#` heading for the resource description
+4. Restart the server to load the new resource
+
+### Accessing Resources
+
+Resources are automatically exposed through the MCP resources primitive with URIs like `resource://filename` (without the `.md` extension). MCP clients can list and read these resources using standard MCP resource operations.
+
 ## API Reference
 
-This server implements the MCP prompts primitive with the following handlers:
+This server implements the MCP prompts and resources primitives with the following handlers:
 
-### List Prompts
+### Prompts API
+
+#### List Prompts
 Returns all available prompt templates with their metadata.
 
-### Get Prompt
+#### Get Prompt
 Retrieves a specific prompt template and replaces arguments with provided values.
 
 **Parameters:**
 - `name`: The template name (directory name)
 - `arguments`: Object containing argument values to substitute
+
+### Resources API
+
+#### List Resources
+Returns all available resources from the `resources` directory.
+
+**Response:**
+- Array of resource objects with `uri`, `name`, `description`, and `mimeType`
+
+#### Read Resource
+Retrieves the content of a specific resource.
+
+**Parameters:**
+- `uri`: The resource URI (e.g., `resource://filename`)
+
+**Response:**
+- Resource content as text with metadata
 
 ## License
 

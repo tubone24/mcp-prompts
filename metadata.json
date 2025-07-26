@@ -1,0 +1,76 @@
+{
+  "id": "com.tubone24.mcp-prompt-templates",
+  "name": "MCP Prompt Templates Server",
+  "version": "1.0.0",
+  "description": "A powerful MCP server for managing customizable prompt templates and static resources",
+  "longDescription": "This Model Context Protocol (MCP) server provides a comprehensive solution for managing and serving prompt templates. It supports dynamic template loading from YAML configurations, argument substitution with Mustache-style placeholders, and resource management for static Markdown content. Perfect for creating reusable prompts for various AI tasks including meeting analysis, content summarization, and custom workflows.",
+  "category": "productivity",
+  "tags": [
+    "mcp",
+    "prompts",
+    "templates",
+    "ai-tools",
+    "automation",
+    "productivity",
+    "claude",
+    "resources",
+    "markdown"
+  ],
+  "author": {
+    "name": "tubone24",
+    "url": "https://github.com/tubone24"
+  },
+  "license": "MIT",
+  "screenshots": [
+    {
+      "url": "./docs/demo0.png",
+      "caption": "Available prompts list in Claude Desktop"
+    },
+    {
+      "url": "./docs/demo1.png", 
+      "caption": "Prompt argument form"
+    },
+    {
+      "url": "./docs/demo2.png",
+      "caption": "Prompt execution result"
+    },
+    {
+      "url": "./docs/demo3.png",
+      "caption": "Claude's response to the generated prompt"
+    }
+  ],
+  "features": [
+    "Dynamic template loading from templates directory",
+    "YAML-based configuration for easy template definition",
+    "Support for dynamic arguments with runtime replacement",
+    "Resource management for serving static Markdown content",
+    "Type-safe implementation with TypeScript",
+    "Standard MCP prompts and resources primitives support",
+    "Hot-reloading for development",
+    "Comprehensive error handling"
+  ],
+  "requirements": {
+    "node": ">=18.0.0",
+    "platforms": ["win32", "darwin", "linux"]
+  },
+  "size": {
+    "bundled": "~2MB",
+    "installed": "~5MB"
+  },
+  "links": {
+    "homepage": "https://github.com/tubone24/mcp-prompts",
+    "repository": "https://github.com/tubone24/mcp-prompts",
+    "issues": "https://github.com/tubone24/mcp-prompts/issues",
+    "documentation": "https://github.com/tubone24/mcp-prompts#readme"
+  },
+  "rating": {
+    "averageRating": 0,
+    "ratingCount": 0
+  },
+  "downloads": {
+    "total": 0,
+    "weekly": 0
+  },
+  "lastUpdated": "2025-07-25T00:00:00Z",
+  "verified": false
+}

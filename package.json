@@ -7,9 +7,16 @@
   "scripts": {
     "build": "tsc",
     "start": "node dist/server.js",
-    "dev": "tsx src/server.ts"
+    "dev": "tsx src/server.ts",
+    "dxt:build": "npm run build && node scripts/build-dxt.js",
+    "dxt:package": "node scripts/package-dxt.js",
+    "dxt:validate": "node scripts/validate-dxt.js"
   },
-  "keywords": ["mcp", "model-context-protocol", "prompt-templates"],
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "prompt-templates"
+  ],
   "author": "tubone24<tubo.yyyuuu@gmail.com>",
   "license": "MIT",
   "dependencies": {
@@ -20,5 +27,8 @@
     "tsx": "^4.19.4",
     "typescript": "^5.8.3",
     "yaml": "^2.8.0"
+  },
+  "devDependencies": {
+    "archiver": "^7.0.1"
   }
 }
