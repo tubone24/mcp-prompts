@@ -1,6 +1,6 @@
-import { Server } from "@modelcontextprotocol/sdk/server/index.js";
-import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
-import { ListPromptsRequestSchema, GetPromptRequestSchema, ListResourcesRequestSchema, ReadResourceRequestSchema, ErrorCode, McpError } from "@modelcontextprotocol/sdk/types.js";
+import { Server } from '@modelcontextprotocol/sdk/server/index.js';
+import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
+import { ListPromptsRequestSchema, GetPromptRequestSchema, ListResourcesRequestSchema, ReadResourceRequestSchema, ErrorCode, McpError, } from '@modelcontextprotocol/sdk/types.js';
 import * as yaml from 'js-yaml';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -14,8 +14,8 @@ class TemplateServer {
     resources;
     constructor() {
         this.server = new Server({
-            name: "prompts-template-server",
-            version: "0.1.0",
+            name: 'prompts-template-server',
+            version: '0.1.0',
         }, {
             capabilities: {
                 prompts: {},
@@ -44,7 +44,7 @@ class TemplateServer {
                         const template = fs.readFileSync(templatePath, 'utf-8');
                         templates.set(category, {
                             config,
-                            template
+                            template,
                         });
                     }
                     catch (error) {
@@ -83,7 +83,7 @@ class TemplateServer {
                         name: resourceName,
                         description: description || `Resource: ${resourceName}`,
                         mimeType: 'text/markdown',
-                        content
+                        content,
                     });
                 }
             }
@@ -99,11 +99,11 @@ class TemplateServer {
             const prompts = Array.from(this.templates.entries()).map(([name, template]) => ({
                 name,
                 description: template.config.description,
-                arguments: template.config.arguments.map(arg => ({
+                arguments: template.config.arguments.map((arg) => ({
                     name: arg.name,
                     description: arg.description,
-                    required: arg.required
-                }))
+                    required: arg.required,
+                })),
             }));
             return { prompts };
         });
@@ -126,22 +126,22 @@ class TemplateServer {
                 description: template.config.description,
                 messages: [
                     {
-                        role: "user",
+                        role: 'user',
                         content: {
-                            type: "text",
-                            text: formattedTemplate
-                        }
-                    }
-                ]
+                            type: 'text',
+                            text: formattedTemplate,
+                        },
+                    },
+                ],
             };
         });
         // Handle list resources
         this.server.setRequestHandler(ListResourcesRequestSchema, async () => {
-            const resources = Array.from(this.resources.values()).map(resource => ({
+            const resources = Array.from(this.resources.values()).map((resource) => ({
                 uri: resource.uri,
                 name: resource.name,
                 description: resource.description,
-                mimeType: resource.mimeType
+                mimeType: resource.mimeType,
             }));
             return { resources };
         });
@@ -157,16 +157,16 @@ class TemplateServer {
                     {
                         uri: resource.uri,
                         mimeType: resource.mimeType,
-                        text: resource.content
-                    }
-                ]
+                        text: resource.content,
+                    },
+                ],
             };
         });
     }
     async run() {
         const transport = new StdioServerTransport();
         await this.server.connect(transport);
-        console.error("MCP Template Server running on stdio");
+        console.error('MCP Template Server running on stdio');
     }
 }
 // Main execution
